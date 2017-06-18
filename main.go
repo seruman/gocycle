@@ -2,14 +2,13 @@ package main
 
 import (
 	"fmt"
+
+	"log"
+	"os"
+
 	"github.com/BurntSushi/xgb/xproto"
 	"github.com/BurntSushi/xgbutil"
 	"github.com/BurntSushi/xgbutil/ewmh"
-	//"github.com/BurntSushi/xgbutil/icccm"
-	//"flag"
-	"log"
-	"os"
-	//"github.com/BurntSushi/xgbutil/xwindow"
 )
 
 func forwardHandler(X *xgbutil.XUtil, activePos int, size int, cl []xproto.Window) {
@@ -18,18 +17,15 @@ func forwardHandler(X *xgbutil.XUtil, activePos int, size int, cl []xproto.Windo
 
 }
 
-/*
-	WTH?
-
-*/
-
-/*
 func backwardHandler(X *xgbutil.XUtil, activePos int, size int, cl []xproto.Window) {
-
-	ewmh.ActiveWindowReq(X, cl[(int(activePos)-1)%size])
+	var selected int
+	selected = activePos - 1
+	if int(activePos)-1 < 0 {
+		selected = len(cl) - 1
+	}
+	ewmh.ActiveWindowReq(X, cl[selected])
 
 }
-*/
 
 func listHandler(X *xgbutil.XUtil, clientids []xproto.Window) {
 
@@ -53,12 +49,11 @@ func contains(s []xproto.Window, e xproto.Window) int {
 }
 
 func main() {
-	//cycleForward := flag.NewFlagSet("+", flag.ExitOnError)
-	//cycleBackward := flag.NewFlagSet("-", flag.ExitOnError)
+
 	if len(os.Args) == 1 {
 		fmt.Println("usage: gocycle <command> ")
 		fmt.Println(" +   Cycle forward")
-		//fmt.Println(" -  Cycle backward")
+		fmt.Println(" -  Cycle backward")
 		fmt.Println(" list  List windows")
 		return
 	}
@@ -85,10 +80,9 @@ func main() {
 	switch os.Args[1] {
 	case "+":
 		forwardHandler(X, activePos, size, clientList)
-		/*
-			case "-":
-				backwardHandler(X, activePos, size, clientList)
-		*/
+
+	case "-":
+		backwardHandler(X, activePos, size, clientList)
 
 	case "list":
 		listHandler(X, clientList)
